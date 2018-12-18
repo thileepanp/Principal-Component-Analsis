@@ -50,7 +50,7 @@ In the table above, eigen values indicate how much variance each component expla
 
 Eigen vectors are the vector locations of these principal components. MAtrix multiplication of our original dataset with eigen vector number 1 will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. 
 
-## Variance in each variable
+## How much of each variable is represented in each principal component
 
 Now, let's see how much variance of each variable is explained by each principal component. 
 
