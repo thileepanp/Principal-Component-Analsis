@@ -61,4 +61,58 @@ Correlation_Matrix[with(Correlation_Matrix, order(-Correlation_Matrix[,1])),]
 
 This correlation matric tells us that 98% of the information in carat and X variables are loaded in the first dimension, 95% of the information from y and z variables are loaded in the first dimension. Information from the variables table and depth is spread between dimension 2 and 3. Information of the variable price is spread between 1st and 4th principal components.
 
-If we discard the 5th principal component we will only loose 3% of the information from only 2 variables. Therefore it is safe is discard this dimension and only keep the 4 remaining dimensions.  
+If we discard the 5th principal component we will only loose 3% of the information from only 2 variables. Therefore it is safe is discard this dimension and only keep the 4 remaining dimensions.
+
+# COMPUTING PRINCIPAL COMPONENT ANALYSIS STEP BY STEP
+
+Let's use the iris data set to perform pricipal component analysis
+
+```{r}
+df <- iris[, -5]
+```
+
+Let's centre and scale the data
+
+```{r}
+df.scaled <- scale(df, center = TRUE, scale = TRUE)
+```
+
+## Computing the correlation matrix
+
+```{r}
+res.cor = cor(df.scaled)
+round(res.cor, 2)
+```
+
+## Calculating Eigen Values and Eigen Vectors
+
+```{r}
+res.eig = eigen(res.cor)
+
+res.eig
+```
+
+## Calculating principal components
+
+As mentioned under the heading 'Eigen Vector' above, to calculate principal components, we need to multiply the scaled and centred data set with eigen vectors. Multiplying the first eigen vector with the data matrix gives us the first principal component and multiplying the data matrix with the second eigen vector gives us the second principal component and so on and so forth. 
+
+### Transposing the eigen vectors
+```{r}
+eigenvectors.t = t(res.eig$vectors)
+```
+
+### Transposing the adjusted data 
+
+```{r}
+df.scaled.t = t(df.scaled)
+```
+
+### Calculating the new principal components
+
+```{r}
+pc = eigenvectors.t %*% df.scaled.t
+pc = t(pc)
+colnames(pc) <- c("PC1", "PC2", "PC3", "PC4")
+head(pc)
+```
+
