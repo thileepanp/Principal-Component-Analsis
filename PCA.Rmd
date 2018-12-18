@@ -1,11 +1,11 @@
 ---
-title: "PCA"
+title: "Principal Component Analysis"
 author: "Thileepan Paulraj"
-date: "18 joulukuuta 2018"
+date: "18 December 2018"
 output: pdf_document
 ---
 
-# UNDERSTANDING PRINCIPAL COMPONENT ANALYSIS (work reproduced from this webpage:https://goo.gl/Wgeieb)
+# UNDERSTANDING PCA (work reproduced from this webpage:https://goo.gl/Wgeieb)
 
 Reading data
 
@@ -26,6 +26,8 @@ library(dplyr)
 data_for_pca <- select(data, -X, -cut, -color, -clarity)
 ```
 
+## Principal components
+
 Installing the factominer package for PCA
 ```{r}
 library(FactoMineR)
@@ -41,3 +43,22 @@ Here,the variables, 'price', 'carat', 'x', 'y', and 'z' form a composite variabl
 pca$eig
 ```
 
+## Eigen values
+In the table above, eigen values indicate how much variance each component explains. For example if we divide the eigen value 4.763 of the first principal component by the total of the eigen values of all the components then we will get a percentage of variance of 68.055. Likewise, the same for all other components also. 
+
+## Eigen Vectors
+
+Eigen vectors are the vector locations of these principal components. MAtrix multiplication of our original dataset with eigen vector number 1 will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. 
+
+## Variance in each variable
+
+Now, let's see how much variance of each variable is explained by each principal component. 
+
+```{r}
+Correlation_Matrix = as.data.frame(round(cor(data_for_pca,pca$ind$coord)^2*100,0))
+Correlation_Matrix[with(Correlation_Matrix, order(-Correlation_Matrix[,1])),]
+```
+
+This correlation matric tells us that 98% of the information in carat and X variables are loaded in the first dimension, 95% of the information from y and z variables are loaded in the first dimension. Information from the variables table and depth is spread between dimension 2 and 3. Information of the variable price is spread between 1st and 4th principal components.
+
+If we discard the 5th principal component we will only loose 3% of the information from only 2 variables. Therefore it is safe is discard this dimension and only keep the 4 remaining dimensions.  
