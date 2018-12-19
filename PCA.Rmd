@@ -7,6 +7,10 @@ output: pdf_document
 
 # UNDERSTANDING PCA (work reproduced from this webpage:https://goo.gl/Wgeieb)
 
+While performing principal components analysis the original n-dimensional data get's projected onto several planes and the plan which has captured the maximum variance of the data becomes the first pricipal component. We select as many principal components as possible so that the maximum variance of the data is captured in minimal number of principal components. 
+
+Maximum variance is captured when the mean squared error between the original dataset and it's projection on to a plane is is minimum. 
+
 Reading data
 
 ```{r}
@@ -48,7 +52,7 @@ In the table above, eigen values indicate how much variance each component expla
 
 ## Eigen Vectors
 
-Eigen vectors are the vector locations of these principal components. MAtrix multiplication of our original dataset with eigen vector number 1 will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. 
+Eigen vectors are the vector locations of these principal components. Matrix multiplication of our original dataset with eigen vector number 1 will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. 
 
 ## How much of each variable is represented in each principal component
 
