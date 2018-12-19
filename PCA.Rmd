@@ -7,23 +7,25 @@ output: pdf_document
 
 # UNDERSTANDING PCA (work reproduced from this webpage:https://goo.gl/Wgeieb)
 
-While performing principal components analysis the original n-dimensional data get's projected onto several planes and the plan which has captured the maximum variance of the data becomes the first pricipal component. We select as many principal components as possible so that the maximum variance of the data is captured in minimal number of principal components. 
+While performing principal components analysis the original n-dimensional data get's projected onto several planes and the plane which has captured the maximum variance of the data becomes the first pricipal component. We select as many principal components as possible so that the maximum variance of the data is captured in minimal number of principal components. 
 
-Maximum variance is captured when the mean squared error between the original dataset and it's projection on to a plane is is minimum. 
+Maximum variance is captured when the mean squared error between the original dataset and it's projection on to a plane is minimum. 
 
-Reading data
+###Reading data
+
+Let's use the diamonds data set now.  
 
 ```{r}
 data = read.csv('diamonds.csv')
 ```
 
-Viewing all the variable names in the dataset
+###Viewing all the variable names in the dataset
 
 ```{r}
 colnames(data)
 ```
 
-Taking only the numeric variables so we could use it in our analysis
+###Taking only the numeric variables so we could use it in our analysis
 
 ```{r}
 library(dplyr)
@@ -48,11 +50,12 @@ pca$eig
 ```
 
 ## Eigen values
-In the table above, eigen values indicate how much variance each component explains. For example if we divide the eigen value 4.763 of the first principal component by the total of the eigen values of all the components then we will get a percentage of variance of 68.055. Likewise, the same for all other components also. 
+In the table above, eigen values indicate how much variance each principal component explains. By doing this, the eigen values indicate which principal component is the most important. If we sort the eigen values and the corresponding eigen vectors in decending order, then we will know which principal components capture maximum variance. 
+For example if we divide the first eigen value 4.763 by the total of all other eigen values then we will get a percentage of variance of 68.055. This indicates that the first prinipal component will capture 68.055% of total variance in the data. 
 
 ## Eigen Vectors
 
-Eigen vectors are the vector locations of these principal components. Matrix multiplication of our original dataset with eigen vector number 1 will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. 
+Eigen vectors transform our original data into principal components.  Matrix multiplication of our scaled and centred original dataset with eigen vector number 1 will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. The principal components are orthoginal to each other.  
 
 ## How much of each variable is represented in each principal component
 
@@ -82,6 +85,10 @@ df.scaled <- scale(df, center = TRUE, scale = TRUE)
 ```
 
 ## Computing the correlation matrix
+
+The correlation matrix finds how each variable in our dataset is correlated with the other variables. The diagonals of the correlation matrix will always contain 1s because it's the value of correlation of the variable with itself.
+
+The dimension of the correlation matrix will depend on the number of variables/ features present in our data set. If we have 4 variables then the correlation matrix will be [4,4] in dimension. If we have 16 variables then the correlation matrix will be [16,16] in dimension.  
 
 ```{r}
 res.cor = cor(df.scaled)
