@@ -1,0 +1,151 @@
+---
+title: "PCA on Wind Turbine Noise Data"
+author: "Thileepan Paulraj"
+date: "20 December 2018"
+output: pdf_document
+---
+
+# UNDERSTANDING PCA (work reproduced from here:https://goo.gl/Wgeieb)
+
+In any real life data set, often variables vary with each other and some of the variation in one variable is actually duplicated in the other. Principal component Analysis (PCA) is a technique in which numeric variables covary. 
+
+### How does PCA reduce dimension of data? 
+
+PCA combines multiple features in the data set into a smaller set of features which are weighted linear combinations of the original set of features. These smaller set of features are called principal components and they represent most of the variability present in the full set of features. Since we have reduced the number of features, we have effectively reduced the dimension of the data. Maximum variability is captured when the mean squared error between the original dataset and it's weighted linear combination (Principal Component) is minimum. 
+
+###Reading data
+
+Let's use a real data set that I have. I have one full year of environmental noise data from a wind farm in Finland and I'm going to use only 0.1% of that entire data set because it's really huge. 
+
+The actual data has about 71 features and I'll randomly choose only 10 of them.  
+
+I will also scale and center the data.
+
+```{r}
+pca_test_data = read.csv('pca_test_data')
+list_of_selected_columns = sample(colnames(pca_test_data), 10)
+pca_test_data = pca_test_data[, list_of_selected_columns]
+pca_test_data.scaled = scale(pca_test_data, scale = TRUE, center = TRUE)
+```
+
+## Visualizing principal components
+
+Now, let's apply PCA to the data and see how and in which direction are each variables in the data set represented. 
+
+```{r}
+library(FactoMineR)
+pca = PCA(pca_test_data)
+```
+
+Real life data is messy and has outliers. As we can see in the first image above, we can find outliers in the data. Outlier detection and removal can also be done in the PCA domain. I can manually remove the outliers from the data set using row numbers but that is not the focus of this work, so I will not do that now. 
+
+As we see in the second image, all the 'Melspectrum' related variables form a principal component in one direction and they all represent 29.91% of the variance in the data. 'Spectral Centroid', 'Spectral Rolloff' and 'Zero Crossing Rate' form a principal component along the y-axis and the remaining features form a principal component along the third axis. 
+
+# COMPUTING PRINCIPAL COMPONENT ANALYSIS STEP BY STEP (work recreated from here https://goo.gl/vCuGqt)
+
+### Reading, Scaling, and centering the data
+
+```{r}
+pca_test_data = read.csv('pca_test_data')
+list_of_selected_columns = sample(colnames(pca_test_data), 10)
+pca_test_data = pca_test_data[, list_of_selected_columns]
+pca_test_data.scaled = scale(pca_test_data, scale = TRUE, center = TRUE)
+```
+
+## Computing the correlation matrix
+
+The correlation matrix finds how each variable in our dataset is correlated with the other variables. The diagonals of the correlation matrix will always contain 1s because it's the value of correlation of the variable with itself.
+
+The dimension of the correlation matrix will depend on the number of variables/ features present in our data set. If we have 4 variables then the correlation matrix will be [4,4] in dimension. If we have 16 variables then the correlation matrix will be [16,16] in dimension.  
+
+```{r}
+res.cor = round(cor(pca_test_data.scaled), 2)
+```
+
+
+## Calculating Eigen Values and Eigen Vectors
+
+### Eigen values
+In the dataframe below, eigen values indicate how much variance each principal component explains. By doing this, the eigen values indicate which principal component is the most important. If we sort the eigen values and the corresponding eigen vectors in decending order, then we will know which principal components capture maximum variance.
+
+For example if we divide the first eigen value 4.763 by the total of all other eigen values then we will get a percentage of variance of 68.055. This indicates that the first prinipal component will capture 68.055% of total variance in the data. 
+
+```{r}
+res.eig = eigen(res.cor)
+
+res.eig$values
+```
+
+### Eigen Vectors
+
+Eigen vectors transform our original data into principal components.  Matrix multiplication of our scaled and centred original dataset with the first eigen vector will generate data for principal component 1. Each of these components are projected in a different direction in the 3-D space. The principal components are orthoginal to each other.
+
+```{r}
+res.eig$vectors
+```
+
+
+## Calculating principal components
+
+As mentioned above, under the heading 'Eigen Vector' above, to calculate principal components, we need to multiply the scaled and centred data set with eigen vectors. Multiplying the first eigen vector with the data matrix gives us the first principal component and multiplying the data matrix with the second eigen vector gives us the second principal component and so on and so forth. 
+
+First we have to transpose the eigen vectors and then the scaled and centred original data.
+
+### Transposing the eigen vectors
+```{r}
+eigenvectors.t = t(res.eig$vectors)
+```
+
+### Transposing the adjusted data 
+
+```{r}
+data.scaled.t = t(pca_test_data.scaled)
+```
+
+Now, we have to do matrix multiplication between the transpose eigen vector matrix and the transposed original data. 
+
+```{r}
+pc = eigenvectors.t %*% data.scaled.t
+pc = t(pc)
+dim(pc)
+colnames(pc) <- c("PC1", "PC2", "PC3", "PC4", "pc5", "pc6", "pc7", "pc8", "pc9", "pc10")
+head(pc)
+```
+
+**The following two plots are recreated from the book 'Practical Statistics for Data Scientists by Peter Bruce and Andrew Bruce**
+
+###Screeplot 
+
+Screeplot is used to visualize the percentage of variance explained by each principal component. This plot can directly be visualized if we use the 'princomp' command in R. 
+
+```{r}
+pca_by_princomp = princomp(pca_test_data.scaled)
+screeplot(pca_by_princomp)
+```
+As we can infer from the previous image, majority of the variance is captured by the first principal component. Also, principal components 5 to 10 doesn't really capture any variance. 
+
+
+### How much does each variable affect a principal component?? 
+
+Since only the first 6 principal components capture some variance let's only visualize them and see how each variable/feature affects them. 
+
+```{r}
+library(tidyr)
+library(ggplot2)
+loadings <- pca_by_princomp$loadings[,1:6]
+loadings <- as.data.frame(loadings)
+loadings$Symbol <- row.names(loadings)
+loadings <- gather(loadings, "Component", "Weight", -Symbol)
+q = ggplot(loadings, aes(x = Symbol, y= Weight)) + 
+  geom_bar(stat = 'identity') + 
+  facet_grid(Component ~ ., scales = 'free_y')
+q+theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+The last 2  features, doesn't have any influence in principal component1. The first 7 features doesn't have any effect on principal components 2,3 and 4. This image gives a clear picture of how important each feature is to each principal component. If we look carefully, we can also see that some features affect the principal component in the positive direction and some affects it in the negative direction. 
+
+# Summary
+
+1. In this work, I first started off by visualizing how variables/features form principal components. For that I used thr **FactoMineR** library of R and the **PCA** command from that library.
+2. Then I went through the step by step guide to perform principal component analysis where I did not use any library but I used commands like **cor** for calculating correlation matrix, **eigen** for calculating the eigen values and vectors, then I performed transpose of matrix and matrix multiplication. 
+3. Finally I used the **princomp** command to visualize variable importance and the weight of each variable in each principal component. 
