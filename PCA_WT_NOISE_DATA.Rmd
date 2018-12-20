@@ -39,7 +39,7 @@ pca = PCA(pca_test_data)
 
 Real life data is messy and has outliers. As we can see in the first image above, we can find outliers in the data. Outlier detection and removal can also be done in the PCA domain. I can manually remove the outliers from the data set using row numbers but that is not the focus of this work, so I will not do that now. 
 
-As we see in the second image, all the 'Melspectrum' related variables form a principal component in one direction and they all represent 29.91% of the variance in the data. 'Spectral Centroid', 'Spectral Rolloff' and 'Zero Crossing Rate' form a principal component along the y-axis and the remaining features form a principal component along the third axis. 
+As we can see in the second image above, some variables group together and form principal components in different directions. 
 
 # COMPUTING PRINCIPAL COMPONENT ANALYSIS STEP BY STEP (work recreated from here https://goo.gl/vCuGqt)
 
