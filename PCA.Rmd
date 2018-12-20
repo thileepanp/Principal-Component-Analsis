@@ -5,7 +5,7 @@ date: "18 December 2018"
 output: pdf_document
 ---
 
-# UNDERSTANDING PCA (work reproduced from this webpage:https://goo.gl/Wgeieb)
+# UNDERSTANDING PCA (work reproduced from here:https://goo.gl/Wgeieb)
 
 While performing principal components analysis the original n-dimensional data get's projected onto several planes and the plane which has captured the maximum variance of the data becomes the first pricipal component. We select as many principal components as possible so that the maximum variance of the data is captured in minimal number of principal components. 
 
@@ -44,14 +44,13 @@ pca = PCA(data_for_pca)
 ```
 Here,the variables, 'price', 'carat', 'x', 'y', and 'z' form a composite variable called the Principal component 1 or Dim 1 which explains 68.06% of the variance in the data. Variable 'depth' explains 18.37% of the variance in the data along the second dimension. The variable 'table' is in the third dimension. 
 
+## Eigen values
+In the table above, eigen values indicate how much variance each principal component explains. By doing this, the eigen values indicate which principal component is the most important. If we sort the eigen values and the corresponding eigen vectors in decending order, then we will know which principal components capture maximum variance. 
+For example if we divide the first eigen value 4.763 by the total of all other eigen values then we will get a percentage of variance of 68.055. This indicates that the first prinipal component will capture 68.055% of total variance in the data. 
 
 ```{r}
 pca$eig
 ```
-
-## Eigen values
-In the table above, eigen values indicate how much variance each principal component explains. By doing this, the eigen values indicate which principal component is the most important. If we sort the eigen values and the corresponding eigen vectors in decending order, then we will know which principal components capture maximum variance. 
-For example if we divide the first eigen value 4.763 by the total of all other eigen values then we will get a percentage of variance of 68.055. This indicates that the first prinipal component will capture 68.055% of total variance in the data. 
 
 ## Eigen Vectors
 
